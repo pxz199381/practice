@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>unique</title>
+</head>
+<body>
+    <script>
+        var array3 = [1, 1, 'a', 'A', 2, 2];
+
+        // 第二版
+        // iteratee 英文释义：迭代 重复
+        function unique(array, isSorted, iteratee) {
+            var res = [];
+            var seen = [];
+
+            for (var i = 0, len = array.length; i < len; i++) {
+                var value = array[i];
+                var computed = iteratee ? iteratee(value, i, array) : value;
+                if (isSorted) {
+                    if (!i || seen !== value) {
+                        res.push(value)
+                    }
+                    seen = value;
+                }
+                else if (iteratee) {
+                    if (seen.indexOf(computed) === -1) {
+                        seen.push(computed);
+                        res.push(value);
+                    }
+                }
+                else if (res.indexOf(value) === -1) {
+                    res.push(value);
+                }
+            }
+            return res;
+        }
+
+        unique(array3, false, function(item){
+            console.log(arguments[0]);
+            return typeof item == 'string' ? item.toLowerCase() : item
+        });
+    </script>
+</body>
+</html>

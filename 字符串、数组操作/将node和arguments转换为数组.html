@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" id="hl">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <p>1</p>
+        <p>2</p>
+        <p>3</p>
+        <span>4</span>
+        <span>5</span>
+    </div>
+</body>
+    <script>
+        var hl = document.getElementById('hl');
+        var hlDom = hl.childNodes;
+//        console.log(DomToArr(hlDom));
+        document.title = 'pei';
+        function DomToArr(dom){
+            var arr = [];
+            try{
+                arr = Array.prototype.slice.call(dom,0);
+//            console.log(Array.prototype.slice.call(arguments,0));
+//            console.log(arguments.callee.caller);
+            }catch(e){
+//                IE8以下兼容
+                for(var i=0;i<dom.length;i++){
+                    arr.push(dom[i]);
+                }
+            }
+            return arr;
+        }
+    </script>
+</html>

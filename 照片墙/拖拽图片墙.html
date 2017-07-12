@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{ margin: 0; padding: 0; }
+		body{ background-color: #222222; -webkit-user-select: none; }
+		#wrap{ width: 600px; height: 420px; margin: 100px auto; position: relative; box-shadow: 0 0 2px #474747;}
+		#wrap .box{ width: 200px; height: 120px; border-radius: 10px; padding: 10px; position: absolute; -webkit-user-select: none;
+			moz-user-select: none; -ms-user-select: none; user-select: none; cursor: pointer;} 
+		#wrap .box img{ width: 200px; height: 120px; border-radius: 10px; box-shadow: 0 0 2px #222222;}
+		#wrap .box.on{ z-index: 5; opacity: 0.8;}
+	</style>
+	<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+</head>
+<body>
+	<div id="wrap">
+		<div class="box"><img src="img/1.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/2.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/3.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/4.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/5.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/6.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/7.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/8.png",width="200",height="120" alt=""></div>
+		<div class="box"><img src="img/9.png",width="200",height="120" alt=""></div>
+	</div>
+	<script>
+		var box = $("#wrap .box");
+		var len = box.length;
+		var w = box.outerWidth(true);
+		var h = box.outerHeight(true);
+		var arr = [];
+		//初始化
+		for(var i=0;i<len;i++){arr[i] = i;}
+		(function(){
+				box.each(function(i){
+					this.top = parseInt(i/3)*h;
+					this.left = parseInt(i%3)*w;
+					$(this).css({
+						top: this.top + 'px' ,
+						left: this.left +'px'
+					}) 
+				});			
+		})()
+		box.mousedown(function(e){
+			var e = e || window.event;
+			var fX = e.pageX;
+			var fY = e.pageY;
+			var fIndex;
+			//不加括号就是属性
+			var fL = $(this).position().left;
+			var fT = $(this).position().top;
+			var box1 = this;
+			$(this).addClass('on');
+			for(var i=0;i<len;i++){
+				//这里加[0]转js对象，因为js对象的唯一性
+				if(box.eq(arr[i])[0] == $(this)[0]){
+					fIndex = i;
+				}
+			}
+			$(document).mousemove(function(e){
+				//获取移动后div1的位置				
+				var e = e || window.event;
+				var lX = e.pageX;
+				var lY = e.pageY;
+				var lL = fL + lX - fX;
+				var lT = fT + lY - fY;
+				$(box1).css({
+					left: lL + 'px',
+					top: lT + 'px'
+				});
+				for(var i=0;i<len;i++){
+					//这里遍历的div对应着包含着新索引的数组即上一次动画后的序列
+					var obj = box.eq(arr[i]);
+					if(obj[0] != $(box1)[0]){
+						var bdL = lL;
+						var bdT = lT;
+						var bdR = lL + w;
+						var bdB = lT + h;
+						var zL = obj[0].left + w/2;
+						var zT = obj[0].top + h/2;
+						// 判断box1的左右边框以及上下边框是否包含中心点
+						if((bdL<zL&&bdR>zL)&&(bdT<zT&&bdB>zT)){
+							var l = obj[0].left;
+							var t = obj[0].top;
+							var a = arr[fIndex];
+							if(fIndex<i){
+								for(var j = i; j >fIndex; j--){
+									box.eq(arr[j])[0].left = box.eq(arr[j-1])[0].left;
+									box.eq(arr[j])[0].top = box.eq(arr[j-1])[0].top;
+									moveBox(box.eq(arr[j]));
+									
+								}
+							}
+							else{
+								for(var j = i; j <fIndex; j++){
+									box.eq(arr[j])[0].left = box.eq(arr[j+1])[0].left;
+									box.eq(arr[j])[0].top = box.eq(arr[j+1])[0].top;
+									moveBox(box.eq(arr[j]));
+									
+								}							
+							}
+							console.log(arr);
+							$(box1)[0].left = l;
+							$(box1)[0].top = t;
+							arr.splice(fIndex,1);
+							console.log(arr);
+							//arr.splice(a,0,o);数组从第a位开始加上o，也就是第a项为o；
+							arr.splice(i,0,a);
+							fIndex = i;
+							console.log(arr);
+						}
+					}
+				}
+			}).mouseup(function(e){
+				var e = e || window.event;
+				$(box1).stop().animate({
+					left: $(box1)[0].left + 'px',
+	                top: $(box1)[0].top + 'px'
+		            }).removeClass('on');
+		            //解绑鼠标移动事件,解绑自身
+		        $(this).off('mousemove');
+		        $(this).off('mouseup');			
+			})
+		}).find('img').mousedown(function(e){	//阻止img随着鼠标拖动默认事件
+			var e = e || window.event;
+			e.preventDefault();
+		})
+		function moveBox(obj) {
+	        var l = obj[0].left + 'px';
+	        var t = obj[0].top + 'px';
+	        obj.stop().animate({
+	            left: l,
+	            top: t
+	        })
+    	}
+	</script>
+</body>
+</html>

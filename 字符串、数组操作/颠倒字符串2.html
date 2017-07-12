@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        var str = 'i am pxz';
+        var str1 = reverseStr(str,'');
+        var str2 = reverseStr(str1,' ');
+        console.log(str2);
+        function reverseStr(str,sep){
+            return str.split(sep).reverse().join(sep);
+        }
+    </script>
+</body>
+</html>

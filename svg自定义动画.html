@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        #wrap{
+            width: 1200px;
+            height: 1200px;
+            margin: 50px auto;
+            border: 2px solid red;
+            box-sizing: border-box;
+        }
+        text{
+            font-size: 30px;
+            stroke: grey;
+            fill: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
+            <!--<line x1="600" y1="0" x2="600" y2="1200" stroke="#000"></line>-->
+            <g transform="translate(600,250)">
+                <rect x="-150" y="-150" width="300" height="300" fill="#ccc" stroke="#000" rx="10" ry="10"></rect>
+                <a xlink:href="#round">
+                    <text x="-30" y="0" id="go">开始
+                        <animateTransform attributeName="transform" type="scale" from="1" to="2" begin="go.click" dur="2s"></animateTransform>
+                    </text>
+                </a>
+                <circle cx="-100" cy="0" r="5" fill="#000">
+                    <animateMotion id="round" path="M0 0 A100 100 0 0 1 200 0A100 100 0 0 1 0 0" begin="indefinite" dur="4s" repeatCount="indefinite"></animateMotion>
+                </circle>
+            </g>
+            <path id="ring" fill="none" stroke="#fff" stroke-width="10" stroke-opacity="0.5"></path>
+            <g transform="translate(600,700)">
+                <path d="M-200 0 A200 200 0 0 1 200 0 A200 200 0 0 1 -200 0" fill="none" stroke="#0BD0CC" stroke-width="3"></path>
+                <path d="M-150 0 A150 150 0 0 1 150 0 A150 150 0 0 1 -150 0" fill="none" stroke="#0BD0CC" stroke-width="3"></path>
+                <path d="M-100 0 A100 100 0 0 1 100 0 A100 100 0 0 1 -100 0" fill="#ccc"></path>
+                <circle cx="-100" cy="0" r="5" fill="#CC6709">
+                    <animate id="line" attributeName="cx" from="-100" to="-150" begin="round.repeat(1)" dur="1s" fill="freeze" calcMode="paced"></animate>
+                    <animateMotion id="round1" path="M0 0 A150 150 0 0 1 300 0 A150 150 0 0 1 0 0" begin="line.end" dur="3s" fill="freeze" calcMode="linear"></animateMotion>
+                    <animate id="line1" attributeName="cx" from="-150" to="-200" begin="round1.end" dur="1s" fill="freeze" calcMode="paced"></animate>
+                    <animateMotion path="M0 0 A200 200 0 0 1 400 0 A200 200 0 0 1 0 0" begin="line1.end" dur="3s" fill="freeze" repeatCount="indefinite" calcMode="discrete"></animateMotion>
+                </circle>
+            </g>
+        </svg>
+    </div>
+    <script>
+        var path = document.getElementById('ring');
+        var r=200;
+        var progress = 0;
+        var timer = setInterval(function(){
+            progress += 0.001;
+            drawRing();
+            if((1-progress)< 0.001){
+                drawRing();
+                progress = 0;
+                clearInterval(timer);
+            }
+        },1);
+        console.log(progress);
+        function drawRing(){
+            //起始绘制点的偏移量
+            var dx = 500,dy = 250,r = 100;
+            // 计算当前的进度对应的角度值
+            var degrees = progress * 360;
+            // 计算当前角度对应的弧度值
+            var rad = degrees* (Math.PI / 180);
+            //极坐标转换成直角坐标
+            var y = (Math.sin(rad) * r).toFixed(2);
+            var x = (Math.cos(rad) * r).toFixed(2);
+            //大于180度时候画大角度弧，小于180度的画小角度弧，(deg > 180) ? 1 : 0
+            var lenghty = window.Number(degrees > 180);
+            //path 属性
+            var descriptions = ['M',dx,dy,'A', r, r, 0, lenghty, 1, r-x+dx,dy-y];
+            // 给path 设置属性
+            path.setAttribute('d', descriptions.join(' '));
+        }
+    </script>
+</body>
+</html>

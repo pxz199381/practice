@@ -1,0 +1,43 @@
+<!doctype html><!--声明当前文档为html文档-->
+<html lang="en"><!--语言为英语-->
+	<head><!--头部-->
+		<meta charset="UTF-8"><!--字符编码：utf-8国际编码  gb2312中文编码-->
+		<meta name="Keywords" content="关键词">
+		<meta name="Description" content="描述">
+		<title>Document</title>
+		<style>/*css样式表的衣柜*/
+
+
+		</style>
+	</head>
+	<body><!--身体-->
+		<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1000 100" preserveAspectRatio="none" id="svg"></svg>
+		<button id="btn">点击</button>
+		<script src="js/snap.svg-min.js"></script>
+		<script>
+			var svg = Snap("#svg");
+			var btn = document.querySelector("#btn");
+			var p = svg.paper.path("M1000,0C1000,0,0,0,0,0C0,0,0,100,0,100C0,100,1000,100,1000,100").attr({
+				fill: "#000"	
+			});
+			var mark = true;
+			btn.onclick = function(){
+				if (mark)
+				{
+					p.animate({
+					d : "M1000,0C1000,0,0,0,0,0C0,0,116,97,393,100C681,103,593,38,1000,0",
+					fill : "#993333"
+					},1000,mina.linear);
+					mark = false;
+				}else{
+					p.animate({
+					d : "M1000,0C1000,0,0,0,0,0C0,0,0,100,0,100C0,100,1000,100,1000,100",
+					fill : "#000"
+					},1000,mina.linear);
+					mark = true;
+				}
+				
+			}
+		</script>
+	</body>
+</html>

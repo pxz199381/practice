@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="Author" content=" ">
+    <title>Document</title>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        a{text-decoration: none;}
+        ul,li{list-style: none;}
+        body{font-size: 14px;font-family: "微软雅黑";}
+        .wrap{
+            width: 300px;
+            height: 410px;
+            margin: 10px auto;
+            padding-top: 10px;
+            box-shadow: 0 0 5px #000;
+            border-radius: 5px;
+        }
+        .show{
+            width: 270px;
+            height: 50px;
+            line-height: 50px;
+            border: 1px solid #999;
+            margin: 0 auto;
+            padding-right: 10px;
+            text-align: right;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        input{
+            width: 50px;
+            height: 50px;
+            float: left;
+            margin: 12px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+       <p class="show"></p>
+       <input type="button" class="num" value="1">
+       <input type="button" class="num" value="2">
+       <input type="button" class="num" value="3">
+       <input type="button" class="symbol" value="+">
+       <input type="button" class="num" value="4">
+       <input type="button" class="num" value="5">
+       <input type="button" class="num" value="6">
+       <input type="button" class="symbol" value="-">
+       <input type="button" class="num" value="7">
+       <input type="button" class="num" value="8">
+       <input type="button" class="num" value="9">
+       <input type="button" class="symbol" value="*">
+       <input type="button" class="num" value="0">
+       <input type="button" class="num" value=".">
+       <input type="button" id="result" value="=">
+       <input type="button" class="symbol" value="/">
+    </div>
+    <script type="text/javascript">
+        var aNum = document.getElementsByClassName("num");
+        var aSymbol = document.getElementsByClassName("symbol");
+        var aShow = document.getElementsByClassName("show")[0];
+        var aResult = document.getElementById("result");
+        var fuhao = "";
+        var firstNum = "";
+        var secondNum = "";
+        for(var i=0;i<aNum.length;i++){
+            aNum[i].onclick = function(){
+                if(!fuhao){
+                    aShow.innerHTML += this.value;
+                    firstNum += this.value;
+                }else{
+                    aShow.innerHTML += this.value;
+                    secondNum += this.value;
+                }
+                
+            }
+        }
+        for(var i=0;i<aSymbol.length;i++){
+            aSymbol[i].onclick = function(){
+                fuhao = this.value;
+                aShow.innerHTML += fuhao;
+            }
+        }
+        aResult.onclick =function(){
+            var res = "";
+            switch(fuhao){
+                case "+":
+                    res = firstNum*1 + secondNum*1;
+                    break;
+                case "-":
+                    res = firstNum - secondNum;
+                    break;
+                case "*":
+                    res = firstNum * secondNum;
+                    break;
+                case "/":
+                    res = firstNum / secondNum*1;
+                    break;    
+            }
+            aShow.innerHTML = res;
+            firstNum = res;
+            secondNum = "";
+            fuhao = "";
+        }
+        
+    </script>
+</body>
+</html>

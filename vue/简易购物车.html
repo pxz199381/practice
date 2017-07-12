@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<meta name="keywords" content="无虑"/>
+    <meta name="description" content="无虑"/>
+	<style>
+	
+	</style>
+	<script src= "vue.js"></script>
+</head>
+<body>
+	<div id="app">
+		<div v-if=" page == 'index'">
+			<h1>登录界面</h1>
+			<button @click = "page = 'menu' ">登录</button>
+			<button @click = "page = '' ">注册</button>
+		</div>
+		<div v-else-if=" page == 'menu'">
+			菜单
+			<ul>
+				<li v-for="item in goods">
+					{{ item.name }} 价格 : {{ item.price }}
+					<button @click = "page = 'buy' ">购买</button>
+					<button @click = "page = 'evaluate' ">评价</button>
+				</li>
+			</ul>
+		</div>
+		<div v-else-if=" page == 'evaluate' ">
+			<input v-model="star" type="text"><br>
+			评价 : <span v-for="item in score()">{{item}}</span>
+		</div>
+		<div v-else-if=" page == 'buy' ">
+			<p v-for="item in goods">
+				<input @click = "checkbox(item)" type="checkbox">
+				商品 : {{item.name}} <br>
+				<button @click = "money(0,item)">-</button>
+				 数量 <input @focus = "money(null,item)" v-model="item.num" :value ="item.num||0" type="number">
+				<button @click = "money(1,item)">+</button> <br>
+				单价 : {{item.price}} 金额 : {{item.price*item.num|unit}}
+			</p>
+			总金额 : {{total|unit}}
+		</div>
+	</div>	
+	<script>
+		var app = new Vue({
+					el: '#app',
+					data:{
+						page : 'index',
+						goods: [
+			          { name:'肥皂' ,price: 10},
+			          { name:'洗衣粉' ,price: 20},
+			          { name:'牙刷' ,price: 30}
+			        	],
+			        	star: 5.2
+					},
+					methods:{
+						// ☀代表太阳，个数为整数的值，★☆代表小数部分，大于0.5则为实心，没有的位补上空心
+						score: function(){
+							var result = [];
+							var integer = Math.floor(this.star);
+							var point = this.star - integer;
+							for(var i=0;i<integer;i++){
+								result.push('☀');
+							}
+							if(Math.round(point)){
+								result.push('★');
+							}
+							while(result.length<10){
+								result.push('☆');
+							}
+							return result;
+						},
+						money: function(order,item){
+							if(typeof item.num =="undefined"){
+								//给item即goods每一项设置num属性，值为0
+								this.$set(item,'num',0);
+							}
+							if(order === 0){
+								item.num--;
+								if(item.num <0){
+									item.num =0;
+								}
+							}
+							else if(order === 1){
+								item.num++
+							};
+						},
+						checkbox: function(item){
+							this.money(null,item);
+							//给item即goods每一项设置active属性，值随点击变化
+							if(typeof item.active == "undefined"){
+								this.$set(item,'active',false);
+							}
+							item.active = !item.active;
+						}
+						// numValue: function(item){
+						// 	this.money(null,item);
+						// 	return item.num;
+						// }						
+					},
+					filters:{
+						unit: function(val){
+							if(isNaN(val)){
+								val = 0;
+							}
+							return val+'元';
+						}
+					},
+					computed:{
+						total: function(){
+							// sum初始一定要赋值0，不然会把undefined加上变量的值，仍为NAN
+							var sum = 0;
+							for(var i in this.goods){
+								if(this.goods[i].active){
+									sum += this.goods[i].price * this.goods[i].num; 
+								}
+							}
+							return sum;	
+						}
+					}
+				})
+	</script>
+</body>
+</html>

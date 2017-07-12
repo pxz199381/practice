@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            width: 200px;
+            margin: 200px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="inp">
+        <div id="show"></div>
+    </div>
+    <script>
+        var show = document.getElementById('show');
+        var inp = document.getElementById('inp');
+        inp.onchange = function(){
+            var val = this.value;
+            var txt = fn(val);
+            show.innerHTML = txt;
+        }
+//        console.log(parseInt('1.23123'));
+//        返回一个数组包含指定参数取值范围在[2,32]的n个随机且不重复整数
+        function fn(n){
+//            把n的取值范围用变量保存起来
+            var min = 2,max = 32,arr = [];
+//            判断是否为空
+            if(n == '' || n == undefined || n == null){
+                return [];
+            }
+//             判断n的数据类型,为数字或字符串Number为NAN类型的
+            if(typeof n != 'number' && (typeof n == 'string' && isNaN(Number(n)))){
+                return [];
+            }
+//            判断n的取值范围，如果超出则返回空
+            if(n<1 || n>max-min+1){
+                return [];
+            }
+//            将输入值向下取整
+            n = parseInt(n);
+//             循环添加随机数，并去重
+            for(var i = 0; i< n; i++){
+                //            生成一个范围内的随机数
+                var ran = Math.floor(min + Math.random()*(max+1));
+//                if(arr[i] == ran){
+//                    i--;
+//                }else{
+//                    arr.push(ran);
+//                }
+                if(arr.indexOf(ran) == -1){
+                    arr.push(ran);
+                }else{
+                    i--;
+                }
+            }
+            return arr.join(' ');
+//            console.log(n);
+        }
+//        console.log(fn('1.56'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="Author" content=" ">
+        <title>Document</title>
+        <style type="text/css">
+            *{margin: 0;padding: 0;}
+            a{text-decoration: none;}
+            ul,li{list-style: none;}
+            body{font-size: 14px;font-family: "微软雅黑";-webkit-user-select:none;-moz-user-select:none;user-select:none;-o-user-select:none;}
+            #box{width: 700px;height: 500px;background: #FCF3B4;margin: 30px auto;padding: 20px;font-size: 16px;color: #333;position: relative;overflow: hidden;}
+            .pbold{font-size: 20px;font-weight: bold;font-family: "Vivaldi";color: #EF41B7}
+            #scrollBar{width: 20px;height: 100%;border-radius:10px;background:linear-gradient(#52C5FC,#E78EFD);position: absolute;top: 0;right: 0;display: none;}
+            #bar{width: 20px;height: 50px;background: rgba(0,0,0,.5);border-radius:10px;position: absolute;top: 0;right;z-index: 2}
+            #b_over{width: 100%;height: 100%;background: transparent;position: absolute;top: 0;right;z-index: 0}
+            #content{position: relative;}
+        </style>
+    </head>
+    <body>
+    <script type="text/javascript">
+        window.onload = function(e){
+            var e = e || window.event;
+            var boxDom = dom("box");
+            var scrollBar = dom("scrollBar");
+            var barDom = dom("bar");
+            var barOver = dom("b_over");
+            var content = dom("content");
+            barDom.onmousedown = function(e){
+                var e = e || window.event;
+                var maxH = scrollBar.offsetHeight-barDom.offsetHeight;
+                var minH = 0;
+                var fPos = getXY(e).y - this.offsetTop - 20;//获取第一次点击时距离滚轮顶端的高度
+                boxDom.onmouseout = null;
+                document.onmousemove = function(e){
+                    var e = e || window.event;
+                    var nPos = getXY(e).y -fPos;
+                    if(nPos>=minH&&nPos<=maxH){
+                        barDom.style.top = nPos +"px";
+                        content.style.top = -nPos +"px";
+                    }                    
+                };
+                document.onmouseup = function(e){
+                    var e = e || window.event;
+                    document.onmousemove = null;
+                    boxDom.onmouseout = function(){
+                        scrollBar.style.display = "none";
+                    };
+                }
+            };
+            barOver.onmousedown = function(e){
+                var e = e || window.event;
+                var maxH = scrollBar.offsetHeight-barDom.offsetHeight;
+                var minH = 0;
+                var oPos = getXY(e).y - barDom.offsetHeight;
+                if(oPos>=minH&&oPos<=maxH){
+                    barDom.style.top = oPos +"px";
+                    content.style.top = -oPos +"px";
+                }
+            }
+            boxDom.onmouseover = function(){
+                var h1 = this.offsetHeight;
+                var h2 = this.scrollHeight;
+                if(h2>h1){
+                    scrollBar.style.display = 'block';
+                };
+            }
+            boxDom.onmouseout = function(){
+                scrollBar.style.display = "none";
+            }
+        }
+        function getXY(e){
+            var e = e || window.event;
+            var x = 0;
+            var y = 0;
+            var cLeft = 0;
+            var cTop = 0
+            if(e.pageX){
+                x = e.pageX;
+                y = e.pageY;
+            }else{
+                if(document.documentElement){
+                    cLeft = document.documentElement.srollLeft;
+                    cTop = document.documentElement.srollTop;
+                }else{
+                    cLeft = document.body.scrollLeft;
+                    cTop = document.body.scrollTop;
+                }
+                x = cLeft + clientX;
+                y = cTop + clientY;
+            }
+            return{ x:x,y:y};
+        }
+        function dom(id){
+            return document.getElementById(id);
+        }
+    </script>
+
+
+        <div id="box">
+            <div id="scrollBar">
+                <div id="bar"></div>
+                <div id="b_over"></div>
+            </div>
+            <div id="content">
+                <h2>阿甘正传</h2><br/>
+                <p class="pbold">1、Life was like a box of chocolates, you never know what you're going to get.</p>
+            　　<p>生命就像一盒巧克力，结果往往出人意料。</p>
+            　　<p class="pbold">2、Stupid is as stupid does.</p>
+            　　<p>蠢人做蠢事，也可理解为傻人有傻福。</p>
+            　　<p class="pbold">3、Miracles happen every day.</p>
+            　　<p>奇迹每天都在发生。</p>
+            　　<p class="pbold">4、it made me look like a duck in water.</p>
+            　　<p>它让我如鱼得水。</p>
+            　　<p class="pbold">5、I don't know if we each have a destiny, or if we're all just floating around accidental—like on a breeze.</p>
+            　　<p>我不懂我们是否有着各自的命运，还是只是到处随风飘荡。</p>
+            　　<p class="pbold">6、Death is just a part of life, something we're all destined to do.</p>
+            　　<p>死亡是生命的一部分，是我们注定要做的一件事。</p>
+            　　<p class="pbold">7、You have got to put the past behind you before you can move on.</p>
+            　　<p>放下包袱，继续前进。</p>
+            　　<p class="pbold">8、It was like just before the sun goes to bed down on the bayou. There was a million sparkles on the river.</p>
+            　　<p>就像太阳在落山前映射在河口上，有无数的亮点在闪闪发光。</p>
+            　　<p class="pbold">9、If there is anything you need, I will not be far away.</p>
+            　　<p>只要你需要，我就在这里。</p>
+            　　<p class="pbold">10、I am a man of my word.</p>
+                <p>我是信守承诺的人。</p>
+            　　<p class="pbold">11、There is one small step for a man,a giant leap for mankind.</p>
+            　　<p>某人的一小步就是人类的一大步。</p>
+            </div>
+        </div>
+
+    </body>
+</html>
+<body>

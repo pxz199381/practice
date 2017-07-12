@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>box-game</title>
+    <style>
+        *{margin: 0; padding: 0;}
+        .box{
+            position: relative;
+            width: 760px;
+            margin: 50px auto;
+        }
+        #msg{
+            text-align: center;
+            color: #35D027;
+            width: 200px;
+            margin: 0 auto;
+            font: bold 18px Verdana;
+            margin-bottom: 20px;
+            background: #e3f9fd;
+            border: 2px solid #c0ebd7;
+            border-radius: 2px;
+        }
+        .btn-container{
+            position: absolute;
+            width: 200px;
+            height: 560px;
+            background: linear-gradient(greenyellow,skyblue,darkblue);
+            left: 560px;
+            top: 48px;
+            /*弹性盒模型*/
+            display: flex;
+            /*主轴方向设置为纵向*/
+            flex-direction: column;
+            /*在纵向上的对齐方式*/
+            justify-content: space-around;
+            /*在横向上的对齐方式*/
+            align-items: center;
+        }
+        .btn-container input{
+            -web-kit-appearance:none;
+            -moz-appearance: none;
+            display: block;
+            width: 120px;
+            height: 25px;
+            border:1px solid #c8cccf;
+            border-radius: 4px;
+            color:#fff;
+            background: #25CDD0;
+            font-weight: 800;
+            outline:0;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btn-container input:nth-child(1){
+            background: #f0fcff;
+            color: #25CDD0;
+            cursor: auto;
+        }
+        input::-webkit-input-placeholder{
+            color: #25CDD0;
+        }
+        #info-container{
+
+        }
+        #info-container div{
+            text-align: center;
+            color: #f0fcff;
+            border-bottom: 1px solid #fff;
+        }
+    </style>
+
+</head>
+<body onkeydown="keydown(event)">
+    <div class="box">
+        <div id="msg"></div>
+        <canvas id="can" width="560" height="560"></canvas>
+        <div class="btn-container">
+            <input type="input"  id="val" placeholder="请输入关卡" onchange="changeLevel()">
+            <input type="button" value="上一步" onclick="fallback()">
+            <input type="button" value="上一关" onclick="toggleLevel(-1)">
+            <input type="button" value="下一关" onclick="toggleLevel(1)">
+            <input type="button" value="重玩本关" onclick="toggleLevel(0)">
+            <input type="button" value="游戏说明" onclick="createInfo()">
+            <div id="info-container"></div>
+        </div>
+    </div>
+    <script src="./js/mapdata100.js"></script>
+    <script>
+//        还要限制下点击和按键频率
+        var can = document.getElementById('can');
+        var msg = document.getElementById('msg');
+        var iVal = document.getElementById('val');
+        var info = document.getElementById('info');
+        var iContainer = document.getElementById('info-container');
+        var now = Date.now();
+        var cxt = can.getContext('2d');
+        var w = 35, h = 35;
+        var levelOrder = 0;
+        var curFace;
+        var faces = [];
+        var curLevel = [];
+        var curMap = [];
+        var nowMap = [];
+        var preMap = [];
+        var curArr = [];
+        var vFlag = false;
+        var iFlag = false;
+        var moveTimes = 0;
+        var infoText = '用键盘上的上、下、左、右键移动小人，把箱子全部推到小球的位置即可过关。箱子只可向前推，不能往后拉，并且小人一次只能推动一个箱子';
+//      把总信息分割成数组
+        var txt = infoText.split("");
+        var aTxt = [];
+        var sTxt = '';
+//        把总信息切割成七个数组
+        function createInfo(){
+            iFlag =!iFlag;
+            if(iFlag){
+                for(var i=0;i<9;i++){
+                    aTxt = txt.slice(7*i,7*i+7);
+                    sTxt = aTxt.join("");
+                    var newDiv = document.createElement('div');
+                    var newTxt = document.createTextNode(sTxt);
+                    newDiv.appendChild(newTxt);
+                    iContainer.appendChild(newDiv);
+                }
+            }else{
+                iContainer.innerHTML= '';
+            }
+        }
+//        绘制右下角信息框
+//      图片素材
+        var imgs = {
+            "block": "images/block.gif",
+            "wall": "images/wall.png",
+            "box": "images/box.png",
+            "ball": "images/ball.png",
+            "up": "images/up.png",
+            "down": "images/down.png",
+            "left": "images/left.png",
+            "right": "images/right.png"
+        };
+        var block,wall,box,ball,up,down,left,right;
+//      预加载图片，并将图片保存到对应变量里
+        imgPreOnload(imgs,function(images){
+             block = images.block;
+             wall = images.wall;
+             box = images.box;
+             ball = images.ball;
+             up = images.up;
+             down = images.down;
+             left = images.left;
+             right = images.right;
+             init();
+        });
+//       初始化小人坐标
+        var pos = new Position(5,5);
+        function Position(x,y){
+            this.x = x;
+            this.y = y;
+        }
+        function imgPreOnload(srcs,fn){
+            var count = 0;
+            var imgNum = 0;
+            var images = {};
+            for(src in srcs){
+                count++;
+            }
+            for(src in srcs){
+                images[src] = new Image();
+                images[src].src = srcs[src];
+                images[src].onload = function(){
+                    if(++imgNum >= count){
+                        fn(images);
+                    }
+                }
+            }
+        }
+//        初始化地图
+        function init(){
+            initItem();
+            moveInfo();
+        }
+//      更新底板
+        function initMap(){
+            for(var i=0;i<16;i++){
+                for(var j=0;j<16;j++){
+                    cxt.drawImage(block,j*w,i*h,w,h);
+                }
+            }
+        }
+//      更新等级
+        function initItem(){
+ //          清空总数组
+            preMap = [];
+            faces = [];
+            curFace = down;
+            curMap = copyArray(levels[levelOrder]);
+            curLevel = levels[levelOrder];
+          /* 将初始化地图的数据复制给新数据，不能用slice和concat去处理二维数组
+          slice和concat的区别，slice会把原数组给删掉
+           curMap = curLevel.slice();*/
+            initMap();
+            drawMap(curMap);
+//           保存初始的地图朝向信息
+            preMap.push(curLevel);
+            faces.push(curFace);
+        }
+//      切换关卡
+        function toggleLevel(i){
+            var len = levels.length;
+            levelOrder += i;
+            if(levelOrder<0){
+                levelOrder = 0;
+            }
+            if(levelOrder>len-1){
+                levelOrder = len-1;
+            }
+            initItem();
+            moveTimes = 0;
+            moveInfo();
+        }
+//       绘制地图
+        function drawMap(level){
+            for(var i=0;i<level.length;i++){
+                for(var j=0;j<level[i].length;j++){
+                    var pic = block;
+                    switch(level[i][j]){
+                        case 1:
+                            pic = wall;
+                            break;
+                        case 2:
+                            pic = ball;
+                            break;
+                        case 3:
+                            pic = box;
+                            break;
+                        case 4:
+                            pic = curFace;
+                            pos.x = i;
+                            pos.y = j;
+                            break;
+                        case 5:
+                            pic = box;
+                            break;
+                    }
+                    cxt.drawImage(pic,i*w-(pic.width-w)/2,j*h-(pic.height-h),pic.width,pic.height)
+                }
+            }
+        }
+//        更换关卡
+        function changeLevel(){
+//            获取input的value值时不能直接在document里获取
+            if(isNaN(iVal.value)) {
+                alert('请输入1~100数字')
+            }else{
+                if(iVal.value< 1 || iVal.value >100){
+                    alert('请输入1~100数字');
+                }else{
+                    levelOrder = iVal.value-1;
+                    initItem();
+                    moveTimes = 0;
+                    moveInfo();
+                }
+            }
+        }
+//        上一步
+        function fallback(){
+            // 限制点击频率（但仍不完善，触发频率足够高时仍会出问题）
+            if(Date.now()-now > 200){
+                now = Date.now();
+                //            总数组中至少有一个初始数组
+                if(preMap.length-1){
+                    preMap.splice(preMap.length-1,1);
+                    faces.splice(faces.length-1,1);
+                    curFace = faces[faces.length-1];
+                    initMap();
+                    drawMap(preMap[preMap.length-1]);
+//              删一个后，把前面的数组（即下一个）赋给绘图函数,还要判断数组的长度
+                    if(preMap.length>1){
+                        curMap = preMap[preMap.length-2];
+                    }else{
+                        curMap = preMap[0];
+                    }
+                    moveTimes--;
+                    moveInfo();
+                }
+            }
+        }
+        function go(dir){
+            var p1,p2;
+//          获取下两个点的信息，如果逻辑成立则可以通过
+            switch(dir){
+                case 'left':
+                    curFace = left;
+                    p1 = new Position(pos.x-1,pos.y);
+                    p2 = new Position(pos.x-2,pos.y);
+                    break;
+                case 'right':
+                    curFace = right;
+                    p1 = new Position(pos.x+1,pos.y);
+                    p2 = new Position(pos.x+2,pos.y);
+                    break;
+                case 'up':
+                    curFace = up;
+                    p1 = new Position(pos.x,pos.y-1);
+                    p2 = new Position(pos.x,pos.y-2);
+                    break;
+                case 'down':
+                    curFace = down;
+                    p1 = new Position(pos.x,pos.y+1);
+                    p2 = new Position(pos.x,pos.y+2);
+                    break;
+            }
+            if(readyGo(p1,p2)){
+                moveTimes++;
+                moveInfo();
+            }
+//           把当前移动过的地图及朝向信息保存给总数组
+//            console.log('pos:('+pos.x+','+pos.y+')');
+            nowMap = copyArray(curMap);
+            preMap.push(nowMap);
+            faces.push(curFace);
+            initMap();
+            drawMap(preMap[preMap.length-1]);
+            if(finish()){
+                vFlag = true;
+//                setTimeout的回调要加引号
+                moveInfo();
+                vFlag = false;
+                var t = setTimeout('toggleLevel(1)',2000)
+            }
+        }
+//        根据当前地图的三个点绘制接下来的地图
+        function readyGo(p1,p2){
+//            超出边界返回false
+//            把上一次的地图信息赋给新数组
+            if(p1.x<0) return false;
+            if(p1.y<0) return false;
+            if(p1.y>curMap.length) return false;
+            if(p1.x>curMap[0].length) return false;
+//            下一位为墙，不可移动
+            if(curMap[p1.x][p1.y] == 1) return false;
+//            下一位为箱子，则看第二位，如果非箱非墙则可移动
+            if(curMap[p1.x][p1.y] == 3){
+                if(curMap[p2.x][p2.y] == 1 || curMap[p2.x][p2.y] == 3){
+                    return false;
+                }else{
+                    curMap[p2.x][p2.y] = 3;
+                }
+            }
+//             如果能进行到这，说明可以行进,把下一位换成小人
+            curMap[p1.x][p1.y] = 4;
+//            在这小人已经移动，但上一位还未修改，如果上一位的初始位为2或者5，
+//          则将实时地图的坐标修改为2，否则为0
+//            p0，p1，p2一直在动，而2,5的位置是不变的
+            var v = curLevel[pos.x][pos.y];
+            if(v != 2){
+                if(v == 5){
+                    v = 2;
+                }else{
+                    v = 0;
+                }
+            }
+//            把p0的样式改变，同时把小人的位置更新
+            curMap[pos.x][pos.y] = v;
+            pos = p1;
+            return true;
+        }
+        function finish(){
+//            只要2,5上不是3则判定为不成功，否则为成功
+            for(var i=0;i<curMap.length;i++){
+                for(var j=0;j<curMap[i].length;j++){
+                    if(curLevel[i][j] == 2 && curMap[i][j] !=3 || curLevel[i][j] == 5 && curMap[i][j] !=3){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function moveInfo(){
+            if(vFlag){
+                msg.innerHTML = '恭喜你过关!!!';
+            }else{
+                msg.innerHTML = '第' + (levelOrder+1) +'关 移动次数：'+ moveTimes;
+            }
+        }
+        function keydown(event){
+//             限制点击频率（但仍不完善，触发频率足够高时仍会出问题）
+            if(Date.now()-now > 500){
+                now = Date.now();
+                console.log(preMap.length);
+                switch(event.keyCode){
+                    case 37:
+                        go('left');
+                        break;
+                    case 38:
+                        go('up');
+                        break;
+                    case 39:
+                        go('right');
+                        break;
+                    case 40:
+                        go('down');
+                        break;
+                }
+            }
+        }
+        function copyArray(arr){
+            var a = [];
+            for(var i=0;i<arr.length;i++){
+                a[i] = arr[i].concat();
+            }
+            return a;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <!--颠倒每一项-->
+    <script>
+        var str = 'i am pxz';
+//        console.log(str.split(' '));
+        console.log(reverseStr(str));
+        function reverseStr(str){
+            var arr = [];
+            arr = str.split(' ');
+            newArr = [];
+            for(var i in arr){
+                newArr.push(arr[i].split('').reverse().join(''));
+            }
+            return newArr.join(' ');
+        }
+    </script>
+</body>
+</html>

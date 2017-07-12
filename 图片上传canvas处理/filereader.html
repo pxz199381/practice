@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #fl{
+            display: block;
+            margin: 50px auto;
+        }
+        /*@font-face{*/
+            /*font-family: 'myFont';*/
+            /*src: url('fonts/Fluo Gums.ttf');*/
+            /*font-weight: bold;*/
+        /*}*/
+        #imgBox{
+            width: 500px;
+            height: 300px;
+            margin: 50px auto;
+            border: 2px solid #aaa;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        #imgBox img{
+            display: block;
+            margin: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <input type="file" id="fl" accept="image/jpeg,image/png,image/gif" multiple="multiple">
+    <div id="imgBox"></div>
+    <script>
+        var fl = document.getElementById('fl');
+        var imgBox = document.getElementById('imgBox');
+        fl.onchange = function(ev){
+//            获取上传的目标事件（input）
+            var myFiles = ev.target.files;
+            for(let i=0;i<myFiles.length;i++){
+                var fileReader = new FileReader();
+                fileReader.onload = function(ev){
+                    var img = new Image();
+                    img.src = ev.target.result;
+                    img.width = '100';
+                    img.height = '100';
+                    imgBox.appendChild(img);
+                }
+                fileReader.readAsDataURL(myFiles[i]);
+            }
+        }
+        var imgs = imgBox.getElementsByTagName('img');
+        imgBox.addEventListener('click',function(ev){
+            if(ev.target && ev.target.tagName == 'IMG'){
+                var oldImg = ev.target;
+//                cxt.drawImage(oldImg,100*j,0,100,100);
+//                var cDatas = cxt.getImageData(0,0,100,100);
+//                var cData = cDatas.data;
+//                for(var i=0;i<cData.length;i+=4){
+//                    cData[i] = 255 - cData[i];
+//                    cData[i+1] = 255 - cData[i+1];
+//                    cData[i+2] = 255 - cData[i+2];
+//                }
+//                cxt.putImageData(cDatas,100*j,100);
+//                j++;
+                var can = document.createElement('canvas');
+                can.width = 100;
+                can.height = 100;
+                var cxt = can.getContext('2d');
+                cxt.drawImage(oldImg,0,0,100,100);
+                var cDatas = cxt.getImageData(0,0,100,100);
+                var cData = cDatas.data;
+                for(var i=0;i<cData.length;i+=4){
+                    cData[i] = 255 - cData[i];
+                    cData[i+1] = 255 - cData[i+1];
+                    cData[i+2] = 255 - cData[i+2];
+                }
+                cxt.putImageData(cDatas,0,0);
+                var imgSrc = can.toDataURL('image/jpeg',Math.random());
+                oldImg.src = imgSrc;
+            }
+        })
+    </script>
+</body>
+</html>

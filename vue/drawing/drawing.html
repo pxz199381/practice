@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>画板</title>
+    <style type="text/css">
+        *{
+            padding:0px;
+            margin:0px;
+        }
+        #box{
+            width:815px;
+            height:600px;
+            margin:0 auto;
+            border:5px ridge darkgray;
+            border-radius:10px;
+            background: linear-gradient(lightskyblue,blue);
+        }
+        #myCanvas{
+            float:left;
+            margin-top:10px;
+            margin-left:25px;
+            background:#F0C030;
+            cursor:url('images/pen.png'),auto;
+        }
+        #color{
+            float:left;
+            width:100px;
+            height:490px;
+            margin-top:10px;
+            margin-left:20px;
+            border:2px solid darkgray;
+            border-radius: 5px;
+        }
+        #thickness{
+            float:left;
+            width:120px;
+            height:480px;
+            margin-top:10px;
+            margin-left:20px;
+
+        }
+        #change{
+            width:100%;
+            height:405px;
+            border:2px solid darkgray;
+            border-radius: 5px;
+        }
+        #clear,#erase{
+            width:80px;
+            height:30px;
+            margin:5px auto;
+            line-height:30px;
+            background:#F000C0;
+            color:#30F000;
+            text-align:center;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+            border:3px solid darkgray;
+            border-radius:50px;
+        }
+        #clear:hover,#erase:hover{
+            background:#87CEEB;
+            color:red;
+        }
+        #thickness div.clickErase{
+            background:#87CEEB;
+            color:red;
+        }
+        #color p,#change p{
+            width:80px;
+            height:30px;
+            margin:0 auto;
+            line-height:30px;
+            text-align:center;
+
+        }
+        #color p{
+            border-bottom:2px solid darkgray;
+        }
+        #change p{
+            border-bottom:2px solid darkgray;
+        }
+        #color span{
+            float:left;
+            width:20px;
+            height:20px;
+            margin-left:6px;
+            margin-top:6px;
+            border:2px solid #fff;
+            cursor:pointer;
+        }
+        #color span.click,#change span.click{
+            border:2px solid red;
+        }
+        #change span{
+            float:left;
+            width:25px;
+            height:25px;
+            line-height:25px;
+            text-align:center;
+            margin-left:10px;
+            margin-top:2px;
+            border:2px solid #fff;
+            border-radius:25px;
+            background:#30C0F0;
+            cursor:pointer;
+        }
+    </style>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="box">
+        <canvas id="myCanvas" width="500" height="500"  ref="can"
+        @mousedown="down($event)" @mousemove="move($event)" @mouseup="up"
+        :style="{cursor: cursorPic()}">
+            你的浏览器不支持canvas标签，请升级浏览器或者更换浏览器。
+        </canvas>
+        <div id="color">
+            <p>画笔颜色</p>
+            <span v-for="item in arr" :style="{background: item}" @click="drawColor = item"></span>
+        </div>
+        <div id="thickness">
+            <div id="change">
+                <p>画笔硬度</p>
+                <span v-for="n in 36" @click="drawHard= n">{{n}}</span>
+            </div>
+            <div id="clear" @click="clear">
+                清除画布
+            </div>
+            <div id="erase" @click="erase = !erase" :class="{'clickErase':erase}">
+                橡皮擦
+            </div>
+        </div>
+    </div>
+    <script>
+        new Vue ({
+            el: '#box',
+            data: {
+                arr: [],
+                x: [],
+                y: [],
+                drawFlag: false,
+                drawColor: '#000',
+                drawHard: 1,
+                erase: false
+            },
+            methods: {
+                cursorPic: function(){
+                    if(this.erase) {
+                        return "url('images/erase.jpg'),auto";
+                    }else{
+                        return "url('images/pen.png'),auto";
+                    }
+                },
+                randomColor1: function(){
+                    var r = Math.floor(Math.random()*256).toString(16);
+                    var g = Math.floor(Math.random()*256).toString(16);
+                    var b = Math.floor(Math.random()*256).toString(16);
+                    if(r.length<2) r = 'f'+r;
+                    if(g.length<2) g = 'e'+g;
+                    if(b.length<2) b = 'd'+b;
+                    return '#'+r+g+b;
+                },
+                randomColor2: function(){
+                    var colorStr = '0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f';
+                    var colorArr = colorStr.split(',');
+                    var color = '#';
+                    for(var i=0;i<6;i++){
+                        color += colorArr[Math.floor(Math.random()*16)]
+                    }
+                    return color;
+                },
+                getColor: function(){
+                    for(var i=0;i<45;i++){
+                        this.arr.push(this.randomColor2());
+                    }
+                    return this.arr;
+                },
+                down: function(event){
+                    var bX,bY;
+//                  保存前值
+                    bX = event.pageX - this.$refs['can'].offsetLeft;
+                    bY = event.pageY - this.$refs['can'].offsetTop;
+                    this.x.push(bX);
+                    this.y.push(bY);
+                    this.drawFlag = true;
+                    console.log(this.drawColor);
+                },
+                move: function(event){
+                    if(this.drawFlag){
+                        var aX,aY;
+//                      保存后续值
+                        aX = event.pageX - this.$refs['can'].offsetLeft;
+                        aY = event.pageY - this.$refs['can'].offsetTop;
+                        this.x.push(aX);
+                        this.y.push(aY);
+                        for(var i=1;i<this.x.length+1;i++){
+                            var ctx = this.$refs['can'].getContext('2d');
+                            ctx.lineWidth = this.drawHard;
+                            ctx.lineJoin = 'round';
+                            if(this.erase){
+                                ctx.strokeStyle = '#F0C030';
+                            }else{
+                                ctx.strokeStyle = this.drawColor;
+                            }
+                            ctx.beginPath();
+                            ctx.moveTo(this.x[i-1],this.y[i-1]);
+                            ctx.lineTo(this.x[i],this.y[i]);
+                            ctx.closePath();
+                            ctx.stroke();
+                        }
+                    }
+                },
+                up: function(){
+                    this.drawFlag = false;
+                    this.x = [];
+                    this.y = [];
+                },
+                clear: function(){
+                    var ctx = this.$refs['can'].getContext('2d');
+                    ctx.clearRect(0,0,500,500);
+                    this.erase = false;
+                }
+            },
+            mounted: function(){
+                this.getColor();
+            }
+        })
+    </script>
+</body>
+</html>

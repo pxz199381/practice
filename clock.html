@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>clock</title>
+    <style>
+        *{margin: 0;padding: 0}
+        body{background: #ddd}
+        #canvas{
+            margin: 100px auto;
+            background: #fff;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="500" height="500">
+        浏览器不支持canvas
+    </canvas>
+    <script>
+        var can = document.getElementById('canvas');
+//      获得绘图环境
+        var ctx = can.getContext('2d');
+        function clock(){
+//          清除画布
+            ctx.clearRect(0,0,can.width,can.height);
+            //      获取时间
+            var now = new Date();
+            var hour = now.getHours();
+            var min = now.getMinutes();
+            var sec = now.getSeconds();
+            min = min + sec/60;
+            hour = hour + min/60;
+//      分刻度、遮罩
+            for(var i=0;i<60;i++){
+                ctx.beginPath();
+                ctx.moveTo(250,250);
+                ctx.arc(250,250,200,6*i*Math.PI/180,6*(i+1)*Math.PI/180);
+                ctx.closePath();
+                ctx.lineWidth = '5';
+                ctx.strokeStyle = 'skyblue';
+                ctx.stroke();
+            }
+            ctx.beginPath();
+            ctx.fillStyle = '#fff';
+            ctx.arc(250,250,185,0,360,false);
+            ctx.fill();
+//      时刻度、遮罩
+            for(var j=0;j<12;j++){
+                ctx.beginPath();
+                ctx.moveTo(250,250);
+                ctx.arc(250,250,200,30*j*Math.PI/180,30*(j+1)*Math.PI/180);
+                ctx.closePath();
+                ctx.lineWidth = '8';
+                ctx.strokeStyle = '#433CFF'
+                ctx.stroke();
+            }
+            ctx.beginPath();
+            ctx.fillStyle = '#fff';
+            ctx.arc(250,250,180,0,360,false);
+            ctx.fill();
+//      秒针
+            ctx.beginPath();
+            ctx.lineWidth = '5';
+            ctx.strokeStyle = '#3FFFE2';
+            ctx.moveTo(250,250);
+            ctx.arc(250,250,170,(sec*6-90)*Math.PI/180,(sec*6-90)*Math.PI/180);
+            ctx.stroke();
+            //      分针
+            ctx.beginPath();
+            ctx.lineWidth = '6';
+            ctx.strokeStyle = '#2FA3FF';
+            ctx.moveTo(250,250);
+            ctx.arc(250,250,150,(min*6-90)*Math.PI/180,(min*6-90)*Math.PI/180);
+            ctx.stroke();
+            //      时针
+            ctx.beginPath();
+            ctx.lineWidth = '8';
+            ctx.strokeStyle = '#433CFF';
+            ctx.moveTo(250,250);
+            ctx.arc(250,250,130,(hour*30-90)*Math.PI/180,(hour*30-90)*Math.PI/180);
+            ctx.stroke();
+//      中心点
+            ctx.beginPath();
+            ctx.arc(250,250,6,0,360);
+            ctx.fillStyle = 'skyblue';
+            ctx.fill();
+
+        }
+        clock();
+        setInterval(clock,1000);
+    </script>
+</body>
+</html>
