@@ -15,13 +15,9 @@
 </head>
 <body>
     <script type="text/javascript">
-                /*
-                 * @param {object} img 展示反相的图片
-                 */
             function showRevertPic(img){
-                img.color = img.src;    // 给img添加属性指向源文件
-                img.revert = createRevertPic(img);   // 给img添加属性指向反相图片
-                img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+                img.color = img.src;   
+                img.revert = createRevertPic(img);  
                 img.onmouseout = function(){
                     this.src = img.revert;
                     console.log(1);
@@ -58,7 +54,7 @@
                 }
             }
             //ctx.putImageData(c, 40, 40);
-            ctx.putImageData(c,0,0,40,40,200,300);    //裁剪效果见图1
+            ctx.putImageData(c,0,0,40,40,200,300); 
             return canvas.toDataURL();          //返回canvas图片数据url
         }
         window.onload=function() {
