@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #text{
+            display: block;
+            margin: 50px auto 0;
+        }
+        .info{
+            width: 369px;
+            height: 50px;
+            margin: 0 auto;
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="div1">
+        <p id="p1">激活</p>
+        <p id="p2">取消</p>
+        <p id="p3">取消</p>
+        <p id="p4">取消</p>
+    </div>
+    <div id="div2">
+        <p id="p5">取消</p>
+        <p id="p6">取消</p>
+    </div>
+    <textarea id="text" cols="50" rows="15" maxlength="50" placeholder="请输入文字，50字以内" autofocus="autofocus"></textarea>
+    <div class="info">
+        <p id="last">还能输入50字</p>
+    </div>
+    <a href="https://www.baidu.com" id="hf" target="_self">点我！！！</a>
+    <script src="eventHandle.js"></script>
+    <script>
+
+        var txt = document.getElementById('text');
+        var last = document.getElementById('last');
+        var aHf = document.getElementById('hf');
+//        获取text默认值，也可以用.defaultValue获取
+        var defaultValue = txt.getAttribute('placeholder');
+        var writeAble;
+        EventUtil.addHandler(aHf,'alertAndHref',function(){
+            alert(aHf.innerHTML);
+            aHf.click();
+        });
+        EventUtil.customDispatch(aHf,'HTMLEvents','alertAndHref',false,false);
+        txt.addEventListener('compositionstart',function(){
+            writeAble = true;
+        },false)
+        txt.addEventListener('compositionend',function(){
+            writeAble = false;
+        },false)
+        if(isInIE()){
+            text.onpropertychange = getLastWord;
+        }else{
+            text.addEventListener('input',getLastWord,false)
+        }
+        function getLastWord(){
+//            if(writeAble){
+//                return;
+//            }
+            var len = this.value.length;
+            last.innerHTML = `还能输入${50-len}字`;
+        }
+        document.body.onclick = function(e){
+            if(e.target.tagName == 'P'){
+                alert(e.target.innerHTML);
+            }
+        }
+        function isInIE(){
+//            兼容所有版本
+            if(!!window.ActiveXObject || 'ActiveXObject' in window){
+                return true;
+            }else{
+                return false;
+            }
+            /*IE11以下
+            var nr = navigator.userAgent;
+            if(nr.indexOf('MSIE') != -1){
+                return true;
+            }*/
+        }
+    </script>
+</body>
+</html>
