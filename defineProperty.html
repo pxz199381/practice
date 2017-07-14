@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        var person = {
+            name: 'll',
+            age: 23,
+            edition: 1
+        };
+        Object.defineProperties(person,{
+//            两个数据属性
+            _year: {
+                //(_year)前面的下划线表示只能通过对象方法访问的属性
+                //在调用Object.defineProperty时,configurable\enumerable\writeable默认为false
+                //在默认即不调用任何方法时,configurable\enumerable\writeable默认为true
+                value: 2017,
+                writable: true
+            },
+            year: {
+                get: function(){
+                    return this._year;
+                },
+                set: function(newValue){
+                    if(newValue>2017){
+                        this._year = newValue;
+                        this.edition+= newValue - 2017;
+                        console.log(this._year);
+                        console.log(this.edition);
+                    }
+                }
+            }
+        });
+        person.year = 2019;
+//        console.log(person.year);
+//        console.log(person.edition);
+    </script>
+</body>
+</html>
