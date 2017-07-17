@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="app">
+        <input
+            type="text"
+            :value="query"
+            @input="query = $event.target.value">
+        <transition-group
+                name="staggered-fade"
+                :css="false"
+                @before-enter="beforeEnter"
+                @enter="enter"
+                @leave="leave"
+                tag="ul">
+            <li
+               v-for="(item,index) in fixList"
+               :key="item.msg"
+               :data-index="index"
+            >{{item.msg}}</li>
+        </transition-group>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="velocity.min.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                query: '',
+                list: [
+                    { msg: 'asdfa'},
+                    { msg: 'mnsbfas'},
+                    { msg: 'wensadf'},
+                    { msg: 'psakdfas'},
+                    { msg: 'wasfaizx'},
+                    { msg: 'ufsnfa'},
+                    { msg: 'bsajfasf'},
+                    { msg: 'asdxzxz'},
+                    { msg: 'aaafasf'}
+                ]
+            },
+            computed: {
+                fixList(){
+                    var vm = this;
+                    return this.list.filter(function(item){
+                        return item.msg.toLowerCase().indexOf(vm.query.toLowerCase()) != -1
+                    })
+                }
+            },
+            methods: {
+                beforeEnter(el){
+                    el.style.opacity = 0;
+                    el.style.height = 0;
+                },
+                enter(el,done){
+                    var delay = el.dataset.index*150
+                    setTimeout(function(){
+                        Velocity(
+                            el,
+                            {opacity: 1, height: '1.6em'},
+                            {complete: done}
+                        )
+                    }, delay)
+                },
+                leave(el,done){
+                    var delay = el.dataset.index*150
+                    setTimeout(function(){
+                        Velocity(
+                            el,
+                            {opacity: 0, height: 0},
+                            {complete: done}
+                        )
+                    },delay)
+                }
+            }
+        })
+    </script>
+</body>
+</html>

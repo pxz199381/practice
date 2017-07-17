@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="app">
+        <random-r :level="2" :msg="3">
+            <template scope="props">
+                <span>i am from app</span>
+                <span>{{props.text}}</span>
+            </template>
+        </random-r>
+        <content-r>
+            <h1 slot="header">
+                About Me
+            </h1>
+            <p>Here's some page content, which will be included in vm.$slots.default, because it's not inside a named slot.</p>
+            <p slot="footer">
+                Copyright 2016 Evan You
+            </p>
+            <p>If I have some content down here, it will also be included in vm.$slots.default.</p>
+        </content-r>
+        <repeat-r></repeat-r>
+        <model-r :arr="listValue"></model-r>
+        <tg-r>
+            <model-r :arr="listValue"></model-r>
+        </tg-r>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+        var getChildren = function(children){
+            return children.map(function(child){
+                return child.children? getChildren(child.children) : child.text
+            }).join('')
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                myValue: '',
+                listValue: [
+                    { name: 'pxz'},
+                    { name: 'msdfa'},
+                    { name: 'asdasf'},
+                    { name: 'ixsddas'},
+                    { name: 'wocds'},
+                    { name: 'tsdsfdas'},
+                    { name: 'qwer'}
+                ]
+            },
+            components: {
+                'content-r': {
+                    render: function(h){
+                        /*console.log(getChildren(this.$slots.default).toLowerCase());
+                        console.log(getChildren(this.$slots.default).toLowerCase().replace(/\W+/g, '-'));
+                        console.log(getChildren(this.$slots.default).toLowerCase().replace(/\W+/g, '-').replace(/(^\-|\-$)/g, ''));*/
+                        var header = this.$slots.header
+                        var body = this.$slots.default
+                        var footer = this.$slots.footer
+                        return h('div',[
+                            h('header',header),
+                            h('main',body),
+                            h('footer',footer)
+                        ])
+                    }
+                },
+                'random-r': {
+                    render: function(h){
+                        return h('h'+this.level,[
+                            this.$scopedSlots.default({
+                                text: this.msg
+                            })
+                        ])
+                    },
+                    props: {
+                        level: {
+                            type: Number,
+                            required: true
+                        },
+                        msg: {
+                            type: Number,
+                            required: true
+                        }
+                    }
+                },
+                'repeat-r': {
+                    render: function(h){
+                        return h('div',
+                            Array.apply(null,{length: 5}).map(function(){
+                                return h('p','hello!')
+                            })
+                        )
+                    }
+                },
+                'model-r': {
+//                    要用props从父组件获取该数组
+                    props: ['arr'],
+                    render: function(h){
+                        var self = this
+                        return h('div',[
+                            h('input',
+                                {
+                                    domProps: {
+                                        value: self.myValue
+                                    },
+                                    on: {
+                                        input: function(ev){
+                                            self.targetValue = ev.target.value
+                                            self.$emit('input',ev.target.value)
+                                        }
+                                    },
+                                    attrs: {
+                                        list: 'foo'
+                                    }
+                                }
+                            ),
+                            h('datalist',{
+                                    attrs: {
+                                        id: 'foo'
+                                    }
+                                },
+                                this.arr.map(function(item){
+                                    return h('option',{
+                                        domProps: {
+                                            value: item.name
+                                        }
+                                    })
+                                })
+                            )
+                        ])
+                    }
+                },
+//                可复用过渡组件
+                'tg-r': {
+                    functional: true,
+                    render: function(h,context){
+                        var data = {
+                            props: {
+                                name: 'fade',
+                                mode: 'out-in'
+                            },
+                            on: {
+                                beforeEnter: function(e){
+                                    console.log(e.target);
+                                }
+                            }
+                        }
+                        return h('transition',data,context.children)
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>

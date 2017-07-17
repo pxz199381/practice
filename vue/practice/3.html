@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .list-show-item{
+            display: inline-block;
+            margin-right: 10px;
+            transition: all 1s;
+        }
+        .list-show-enter, .list-show-leave-to{
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        /*使用 FLIP 过渡的元素不能设置为 display: inline 。作为替代方案，可以设置为 display: inline-block 或者放置于 flex 中*/
+        .list-show-leave-active{
+            position: absolute;
+        }
+        #container{
+            display: flex;
+            width: 237px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        #container div{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 25px;
+            height: 25px;
+            border: 1px solid #aaa;
+            margin-right: -1px;
+            margin-bottom: -1px;
+        }
+        #container div:nth-child(3n){
+            margin-right: 0;
+        }
+        #container div:nth-child(27n){
+            margin-bottom: 0;
+        }
+        .shuf-move{
+            transition: transform 1s;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <button @click="shuffle(arr)">shuffle</button>
+        <button @click="add">add</button>
+        <button @click="remove">remove</button>
+        <transition-group name="list-show" tag="p">
+            <span
+                v-for="val in arr"
+                :key="val"
+                class="list-show-item"
+            >
+                {{val}}
+            </span>
+        </transition-group>
+        <button @click="sfGroup()">Sshuffle</button>
+        <!--<div id="container">-->
+        <!--</div>-->
+        <transition-group name="shuf" id="container" tag="div">
+            <div v-for="val in cells" :key="val.id" ref="items">{{val.number}}</div>
+        </transition-group>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="lodash.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                arr : [1,2,3,4,5,6,7,8,9],
+                maxNum: 10,
+                divList: [],
+                cells: Array.apply(null,{length: 81}).map(function(_,index){
+                    return {
+                        id: index,
+                        number: index%9 +1
+                    }
+                })
+            },
+            methods: {
+                randomIndex(){
+                    return Math.floor(Math.random()*this.arr.length);
+                },
+                add(){
+                    this.arr.splice(this.randomIndex(),0,this.maxNum++)
+                },
+                remove(){
+                    this.arr.splice(this.randomIndex(),1)
+                },
+                shuffle(){
+                    this.arr = _.shuffle(this.arr);
+                },
+                sfGroup(){
+//                    items = items.reverse();
+                    this.cells = _.shuffle(this.cells);
+
+                }
+            }
+        })
+//        var con = document.getElementById('container');
+//        var frag = document.createDocumentFragment();
+//        for(var i=0;i<81;i++){
+//            var num = Math.floor(Math.random()*10);
+//            var div = document.createElement('div');
+//            var text = document.createTextNode(num);
+//            div.appendChild(text);
+//            frag.appendChild(div);
+//        }
+//        con.appendChild(frag);
+    </script>
+</body>
+</html>

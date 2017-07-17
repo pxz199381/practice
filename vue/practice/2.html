@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            width: 300px;
+            margin: 100px auto;
+        }
+        .bounce-enter-active{
+            animation: bounce-in 0.5s;
+        }
+        .bounce-leave-active{
+            animation: bounce-in 0.5s reverse;
+        }
+        @keyframes bounce-in{
+            0%{
+                transfrom: scale(0);
+            }
+            50%{
+                transform: scale(1.5);
+            }
+            100%{
+                transform: scale(1);
+            }
+        }
+        .fade-enter-active, .fade-leave-active{
+            transition: opacity .3s ease;
+        }
+        .fade-enter, .fade-leave-to{
+            opactiy: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <button @click="log">check out here!</button>
+        <div class="container">
+            <button @click="show = !show">toggle show!</button>
+            <transition name="bounce">
+                <p v-if="show">Look at me!</p>
+            </transition>
+            <transition name="fade" mode="out-in">
+                <button :key="fadeState" @click="fadeState = !fadeState">{{ fadeState ? 'on' : 'off'}}</button>
+            </transition>
+        </div>
+        <my-list :values="values">
+            <template slot="item" scope="props">
+                <li>{{props.text}}</li>
+            </template>
+        </my-list>
+    </div>
+    <template id="myList">
+        <ul>
+            <slot name="item" :text="val" v-for="val in values"></slot>
+        </ul>
+    </template>
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                values: [
+                    'a','b','c'
+                ],
+                message: '没有更新',
+                show: true,
+                fadeState: true,
+                cells: Array.apply(null,{length: 81}).map(function(item,index){
+                    return {
+                        id: index,
+                        number: index%9 +1
+                    }
+                })
+            },
+            components: {
+                'my-list': {
+                    template: '#myList',
+                    props: ['values']
+                }
+            },
+            methods: {
+                updateData(){
+                    this.message = '更新完成'
+                    console.log(this.$el.textContent);
+                    this.$nextTick( () => console.log(this.$el.textContent) )
+                },
+                log(){
+                    console.log(this.cells);
+                }
+            }
+        })
+    </script>
+</body>
+</html>

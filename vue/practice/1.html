@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul,li{
+            list-style: none;
+        }
+        .container{
+            width: 300px;
+            margin: 100px auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <select v-model="slt">
+                <option value="" disabled>请选择</option>
+                <option v-for="item in options" :value="item.value">{{item.text}}</option>
+            </select>
+            <p>selected:{{slt}}</p>
+            <input type="text" placeholder="add a todo" @keyup.enter="addNew" v-model="newText">
+            <ul>
+                <li is="todo-item" v-for="(item,index) in todos" :todo="item" @remove="todos.splice(index,1)" :key="item.id"></li>
+            </ul>
+        </div>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+        Vue.component('todo-item',{
+            props: ['todo'],
+            template: `
+            <li @click="al">{{todo}}
+            <button @click.stop="$emit('remove')">x</button>
+            </li>
+            `,
+            methods: {
+                al(){
+                    alert(1)
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                newText: '',
+                todos: [
+                    'work hard',
+                    'study better',
+                    'read more'
+                ],
+                slt: '',
+                options: [
+                    {text: 'one',value: 'A'},
+                    {text: 'two',value: 'B'},
+                    {text: 'three',value: 'C'}
+                ]
+            },
+//            计算属性是基于它们的依赖进行缓存的
+            computed: {
+                reverse(){
+                    return this.message.split('').reverse().join('')
+                }
+            },
+            methods: {
+                addNew(){
+                    this.todos.push(this.newText);
+                    this.newText = '';
+                }
+            }
+        })
+        //        vm.$watch('a',function(newValue,oldValue){
+//            alert(Object.keys(this))
+//        })
+    </script>
+</body>
+</html>
