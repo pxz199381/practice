@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        //任务列表
+        var tasks = [];
+        //添加任务
+        var add = function(task){
+            tasks.push(task);
+        }
+        //执行所有任务
+        var flush = function(){
+            tasks.map(function(task){
+                task();
+            })
+        }
+        //利用timeout将事件加入事件循环中
+        setTimeout(flush);
+
+        var dispatch = function(name){
+            tasks.map(function(item){
+                if(item.name == name){
+                    item.handler();
+                }
+            })
+        }
+
+        var demoTask = {
+            name: 'demo',
+            handler: function(){
+                console.log('demo');
+            }
+        }
+    </script>
+</body>
+</html>

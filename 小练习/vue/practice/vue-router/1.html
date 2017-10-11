@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="app">
+        <h1>hello world!!!</h1>
+        <p>
+            <router-link to="/foo">Go to foo</router-link>
+            <router-link to="/bar">Go to bar</router-link>
+        </p>
+        <router-view></router-view>
+    </div>
+    <script src="../vue.js"></script>
+    <script src="vue-router.js"></script>
+    <script>
+//        定义路由组件
+        const Foo = {template: `<div>hey,I am foo!</div>`}
+        const Bar = {template: `<div>hey,I am bar!</div>`}
+//        定义路由
+        const routes = [
+            {path: '/foo',component: Foo},
+            {path: '/bar',component: Bar}
+        ]
+//        创建route实例，然后传递routes配置
+    </script>
+</body>
+</html>

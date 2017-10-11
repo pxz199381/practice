@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        //原map方法
+        var newArr = [1,2,3,4].map(function(item){
+            return item+1;
+        },{a:1})
+
+        //封装的map方法
+
+        Array.prototype._map = function(func,context){
+            //保存返回的结果数组
+            var temp = [];
+            if(typeof func == 'function'){
+                var len = this.length;
+                for(var i=0;i<len;i++){
+                    temp.push(func.call(context,this[i],i,this));
+                }
+            }else{
+                console.error('TypeError: '+func+' is not a function.');
+            }
+            return temp;
+        }
+        var newArr1 = [1,2,3,4]._map(function(item){
+            console.log(this);
+            return item*2;
+        },{a:1});
+        console.log(newArr1);
+    </script>
+</body>
+</html>

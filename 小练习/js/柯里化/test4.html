@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        Array.prototype.merge = function(func,chars){
+            return this.map(func).join(chars);
+        }
+        function add(num){
+            return function(item){
+                return item+num;
+            }
+        }
+        function red(num){
+            return function(item){
+                return item-num;
+            }
+        }
+        var arr = [1,2,3,4];
+        console.log(arr.merge(add(1), '-'));;
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p>123</p>
+    <p>456</p>
+    <p>789</p>
+    <div>111</div>
+    <div>222</div>
+    <div>333</div>
+    <script>
+        //第一种
+        var t = document.getElementsByTagName,
+            arr = [];
+        arr.push.apply(arr,t.call(document,'p'));
+        arr.push.apply(arr,t.call(document,'div'));
+        arr.forEach(function(item){
+            item.style.border = '1px solid red';
+        })
+        //第二种
+        var d = document.getElementsByTagName.bind(document),
+            arr1 = [];
+        arr1.push.apply(arr1,d('p'));
+        arr1.push.apply(arr1,d('div'));
+        arr1.forEach(function(item){
+            item.style.border = '1px solid blue';
+        })
+    </script>
+</body>
+</html>

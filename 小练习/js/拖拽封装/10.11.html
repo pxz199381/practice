@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin: 0; padding: 0;}
+        #box{
+            width: 100px;
+            height: 100px;
+            background: deepskyblue;
+        }
+    </style>
+</head>
+<body>
+    <div id="box" style="color: blue">123</div>
+    <script>
+        ;(function(){
+            var transform = getTransform();
+            function Drag(selector){
+                this.elem = typeof selector == 'object' ? selector : document.getElementById(selector);
+                this.startX = 0,
+                this.startY = 0,
+                this.sourceX = 0,
+                this.sourceY = 0;
+                this.init();
+            }
+            Drag.prototype = {
+                constructor: Drag,
+                init: function(){
+                    this.setDrag();
+                },
+                //获取样式
+                getStyle(prop){
+                return this.elem.currentStyle ? this.elem.currentStyle[prop] : window.getComputedStyle(this.elem,null)[prop];
+                },
+                //获取目标元素位置
+                getTargetPos(){
+                    var pos = {x:0,y:0};
+                    if(transform){
+                        var transformVal = this.getStyle(transform);
+                        if(transformVal == 'none'){
+                            this.elem.style[transform] = 'translate(0,0)';
+                            return pos;
+                        }else{
+                            var match = transformVal.match(/-?\d+/g);
+                            return pos = {
+                                x: parseInt(match[4].trim()),
+                                y: parseInt(match[5].trim())
+                            }
+                        }
+                    }else{
+                        if(this.getStyle('position') == 'static'){
+                            this.elem.style.position = 'relative';
+                            return pos;
+                        }else{
+                            var x = parseInt(this.getStyle('left')) ? this.getStyle('left') : 0;
+                            var y = parseInt(this.getStyle('top')) ? this.getStyle('top') : 0;
+                            return pos = {
+                                x: x,
+                                y: y
+                            }
+                        }
+                    }
+                },
+                //设置目标元素位置
+                setTargetPos(pos){
+                    if(transform){
+                        this.elem.style.transform = `translate(${pos.x}px,${pos.y}px)`;
+                    }else{
+                        this.elem.style.cssText += `;left:${pos.x}px;top:${pos.y}px`;
+                    }
+                    return this.elem;
+                },
+                setDrag(){
+                    console.log(this);
+                    this.elem.addEventListener('mousedown',start,false);
+                    //鼠标按下触发事件
+                    function start(event){
+                        //初始鼠标位置
+                        self.startX = mousePos(event).x;
+                        self.startY = mousePos(event).y;
+                        //初始目标位置
+                        self.sourceX = self.getTargetPos().x;
+                        self.sourceY = self.getTargetPos().y;
+                        //添加move,up事件
+                        document.addEventListener('mouseover',move,false);
+                        document.addEventListener('mouseup',end,false);
+                    }
+                    //鼠标滑动触发事件
+                    function move(event){
+                        //获取当前鼠标位置
+                        var currentX = mousePos(event).x;
+                        var currentY = mousePos(event).y;
+                        //计算差值
+                        var distanceX = currentX - self.startX;
+                        var distanceY = currentY - self.startY;
+                        //设置目标位置
+                        self.setTargetPos({
+                            x: (self.sourceX + distanceX).toFixed(),
+                            y: (self.sourceY + distanceY).toFixed()
+                        })
+                    }
+                    //鼠标移开触发事件
+                    function end(event){
+                        document.removeEventListener('mouseover',move);
+                        document.removeEventListener('mouseup',end);
+                    }
+                }
+            }
+            //transform的兼容函数
+            function getTransform(){
+                var divStyle = document.createElement('div').style,
+                    transform = '',
+                    transformArr = ['transform','webkitTransform','msTransform','MozTransform','OTransform'],
+                    len = transformArr.length;
+                for(var i=0;i<len;i++){
+                    if(transformArr[i] in divStyle){
+                        return transform = transformArr[i];
+                    }
+                }
+                return transform;
+            }
+            //鼠标位置兼容函数
+            function mousePos(event){
+                var x,y;
+                if(event.pageX){
+                    x = event.pageX;
+                    y = event.pageY;
+                }else{
+                    //前者是为了在XHTML网页中的兼容
+                    var left = document.documentElement && document.documentElement.scrollLeft || document.body.scrollLeft;
+                    var top = document.documentElement && document.documentElement.scrollTop || document.body.scrollTop;
+                    x = event.clientX + left;
+                    y = event.clientY + top;
+                }
+                return {x,y};
+            }
+            window.Drag = Drag;
+        }());
+        new Drag('box');
+    </script>
+</body>
+</html>

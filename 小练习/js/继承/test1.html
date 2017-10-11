@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        function Person(name,age){
+            this.name = name;
+            this.age = age;
+        }
+        Person.prototype.getName = function(){
+            return this.name;
+        }
+        Person.prototype.getAge = function(){
+            return this.age;
+        }
+
+        //构造函数继承
+        function Children(name,age,sex){
+            Person.call(this,name,age);
+            this.sex = sex;
+        }
+
+        //原型继承
+        Children.prototype = Object.create(Person.prototype,{
+            constructor: {
+                value: Children,
+                enumerable: false
+            },
+            getSex: {
+                value: function(){
+                    return this.sex;
+                }
+            }
+        })
+
+        var c1 = new Children('pei',24,'boy');
+        console.log(c1.getName());
+        console.log(c1.getAge());
+        console.log(c1.getSex());
+    </script>
+</body>
+</html>

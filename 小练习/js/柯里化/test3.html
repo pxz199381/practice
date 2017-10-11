@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        var _find = createCurry(_filter);
+        var findNumber = _find(function(item){
+            if(typeof item == 'number'){
+                return item;
+            }
+        });
+        console.log(findNumber([1, 2, 3, 'a', '4', 5]));
+        function _filter(array,fn){
+            return array.filter(fn);
+        }
+        function createCurry(func,args){
+            var args = args || [];
+            var flen = func.length;
+            return function(){
+                var _args = [].slice.call(arguments);
+                [].push.apply(_args,args);
+                if(_args.length<flen){
+                    return createCurry.call(this,func,_args);
+                }
+                return func.apply(this,_args);
+            }
+        }
+    </script>
+</body>
+</html>
