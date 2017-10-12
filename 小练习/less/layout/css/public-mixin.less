@@ -1,0 +1,50 @@
+
+.box-shadow(@x: 0, @y: 0, @blur: 1px, @color: #000){
+  box-shadow: @arguments;
+}
+
+
+//波浪线样式
+
+.underline(@color1:green,@color2:red,@h:.3rem,@hasBorder:false,@pos:bottom){
+  @average: average(@color1,@color2);
+  .border(@hasBorder) when (@hasBorder = true){
+    border-top: 1px solid @average;
+    border-bottom: 1px solid @average;
+  }
+  .pos(top){
+    left: 0;
+    top: -@h;
+    width: 100%;
+    height: @h;
+  }
+  .pos(bottom){
+    left: 0;
+    top: 100%;
+    width: 100%;
+    height: @h;
+  }
+  .pos(left){
+    left: -@h;
+    top: 0;
+    width: @h;
+    height: 100%;
+  }
+  .pos(right){
+    left: 100%;
+    top: 0;
+    width: @h;
+    height: 100%;
+  }
+  position: relative;
+  &::after{
+    box-sizing: border-box;
+    content: '';
+    position: absolute;
+    .pos(@pos);
+    background: linear-gradient(135deg, transparent 45%, @color1, transparent 55%),
+    linear-gradient(45deg, transparent 45%, @color2, transparent 55%);
+    background-size: @h*2 @h*2;
+    .border(@hasBorder);
+  }
+}

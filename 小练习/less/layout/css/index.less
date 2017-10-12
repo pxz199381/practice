@@ -1,0 +1,302 @@
+*{margin: 0;padding: 0;}
+html{
+  font-size: 62.5%;
+}
+body{
+  background: #F6F6F6;
+  font: 12px/20px Microsoft YaHei, arial;
+  color: #555555;
+  over-flow: auto;
+  padding-bottom: 300px;
+}
+a{text-decoration: none;}
+ul,li{list-style: none;}
+
+/*引入公共mixin*/
+
+@import (reference) "public-mixin.less";
+
+.clearfix{
+  .content{
+    display: table;
+    content: '';
+    line-height: 0;
+  }
+  &::before{
+    .content;
+  }
+  &::after{
+    .content;
+    clear: both;
+  }
+}
+//导航
+.menu{
+  background: #2C2C2C;
+  .menu__list{
+    display: flex;
+    justify-content: space-around;
+    a{
+      line-height: 34px;
+      color: #A9A9A9;
+      transition: color 0.5s;
+      &:hover{
+        color: #fff;
+      }
+    }
+  }
+}
+.l-wrap{
+  width: 120rem;
+  height: 100%;
+  margin: 0 auto;
+}
+
+//头部
+.site-header{
+  height: 74px;
+  padding-top: 4px;
+  border-bottom: 1px solid #D9D9D9;
+  background: linear-gradient(#fff,#F4F4F4);
+  box-shadow: 0 2px 2px #eee;
+  .l-wrap{
+    position: relative;
+    .logo{
+      position: absolute;
+      left: 25px;
+      width: 420px;
+      height: 45px;
+      padding-top: 12px;
+    }
+    .l-form-wrap{
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      .form__input--text{
+        width: 332px;
+        padding: 0 2px;
+        border: 1px solid #eee;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 4px;
+        transition: all .4s linear 0s;
+        &:focus{
+          border-color: #1199EE;
+          box-shadow: 2px 2px 6px #ccc;
+        }
+      }
+      .form__input--btn{
+        font-size: 16px;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 1px #000;
+        background: #f6f6f6;
+        color: #333;
+        text-align: center;
+        width: 86px;
+        border: 1px solid #eee;
+        line-height: 30px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+//内容区块
+section{
+  margin: .5rem auto 0;
+  padding: 1.5rem;
+  .underline(orangered,greenyellow,.5rem,true);
+  &.section-one{
+    .valid(){
+      border-color: #429032;
+      box-shadow: 5px 0 0 #429032;
+    }
+    .invalid(){
+      border-color: #D61D1D;
+      box-shadow: 5px 0 0 #D61D1D;
+    }
+    .form-group{
+      width: 32rem;
+      padding: 1rem;
+      border: 1px solid transparent;
+      transition: border .5s;
+      &:hover{
+        border-color: darken(#eee,30%);
+      }
+      label{
+        display: block;
+        font-weight: bold;
+      }
+      input,textarea{
+        box-sizing: border-box;
+        width: 100%;
+        line-height: 2rem;
+        padding: .5rem .5rem .5rem 1rem;
+        border: 1px solid #ccc;
+        outline: none;
+        &:valid{
+          .valid;
+        }
+        &:invalid{
+          .invalid;
+        }
+      }
+    }
+  }
+  &.section-two{
+    li{
+      margin: 1.5rem auto;
+    }
+    .hd{
+      font-size: 2rem;
+      color: #1199EE;
+    }
+    .bd{
+      max-height: 0;
+      overflow: hidden;
+      transition: all 1s ease-out;
+      font-size: 1.4rem;
+    }
+    li:hover .bd{
+      max-height: 60rem;
+      transition-timing-function: ease-in;
+    }
+  }
+  &.section-three{
+    @green: green;
+    .common(){
+      padding: 2px;
+      background-color: @green;
+      background-clip: content-box;
+    }
+    .radio-beauty-container{
+      text-align: center;
+      color: @green;
+      .radio-name{
+        vertical-align: middle;
+        font-size: 1.6rem;
+      }
+      .radio-beauty{
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        box-sizing: border-box;
+        border: 1px solid @green;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin: 0 1.5rem 0 .3rem;
+        &:hover{
+          box-shadow: 0 0 7px @green;
+          .common;
+        }
+      }
+    }
+    input[type="radio"]:checked +.radio-beauty{
+      .common;
+    }
+    .tan{
+      width: 0;
+      height: 0;
+      border-top: 5rem solid transparent;
+      border-bottom: 5rem solid transparent;
+      border-left: 10rem solid green;
+    }
+    img.desaturate{
+      filter: grayscale(100%);
+    }
+    .word-underline{
+      .underline(red,blue,.4rem,false,top);
+    }
+  }
+  &.section-four{
+    height: 10rem;
+    padding: 0 1.5rem;
+    .loop(@n) when (@n>0){
+      .demo@{n}{
+        animation-delay: (0.1s * @n);
+      }
+      .loop((@n - 1));
+    }
+    .circle(@n) when (@n > 0){
+      .demo@{n}{
+        left: 2rem*cos(360deg/8*@n);
+        top: 2rem*sin(360deg/8*@n);
+      }
+      .circle((@n - 1));
+    }
+    .demo-wrap{
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .layout(@isRight:false){
+      float: left;
+      width: 100%/3;
+      height: 100%;
+      padding: 2rem;
+      box-sizing: border-box;
+      border-left: 1px solid cornflowerblue;
+      .border-right(@isRight);
+      .border-right(@a) when (@a = true){
+        border-right: 1px solid cornflowerblue;
+      }
+    }
+    .l-wrap--left {
+      .layout;
+      .demo{
+        width: .6rem;
+        height: .6rem;
+        border-radius: .3rem;
+        background: #68b2ce;
+        float: left;
+        margin: 0 .5rem;
+        animation: loading1 linear 1s infinite;
+      }
+      .loop(5);
+    }
+    .l-wrap--center{
+      .layout;
+      .demo{
+        width: .4rem;
+        height: .8rem;
+        background: #68b2ce;
+        float: left;
+        margin: 0 .5rem;
+        animation: loading1 linear 1s infinite;
+      }
+      .loop(5);
+    }
+    .l-wrap--right{
+      .layout(true);
+      .demo-wrap{
+        position: relative;
+        .demo{
+          position: absolute;
+          width: .6rem;
+          height: .6rem;
+          border-radius: 50%;
+          background: #68b2ce;
+          animation: loading2 linear 1s infinite;
+        }
+        .circle(8);
+        .loop(8);
+      }
+    }
+    @keyframes loading1{
+      0%,60%,100%{
+        transform: scale(1);
+      }
+      30%{
+        transform: scale(2.5);
+      }
+    }
+    @keyframes loading2{
+      0%,60%,100%{
+        transform: scale(1);
+      }
+      30%{
+        transform: scale(2);
+      }
+    }
+  }
+}

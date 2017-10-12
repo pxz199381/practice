@@ -1,0 +1,72 @@
+.img-center{
+  width: 200px;
+  height: 150px;
+  margin: 20px;
+  overflow: hidden;
+  position: relative;
+  img{
+    display: block;
+    position: absolute;
+    &.aspect-x{
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &.aspect-y{
+      height: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+}
+
+button{
+  border: none;
+  background: none;
+  outline: none;
+  &.aspect{
+    width: 200px;
+    height: 60px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+  }
+}
+
+.dialog-dropback{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,.3);
+  .container{
+    position: absolute;
+    width: 300px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: #fff;
+    text-align: center;
+    .header{
+      padding: 15px;
+    }
+    .content{
+      padding: 0 15px 15px;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.8;
+    }
+    .footer{
+      border-top: 1px solid #e5e5e5;
+      display: flex;
+      button{
+        flex: 1;
+        height: 50px;
+        font-size: 15px;
+        &.cancel{
+          border-right: 1px solid #e5e5e5;
+        }
+      }
+    }
+  }
+}
