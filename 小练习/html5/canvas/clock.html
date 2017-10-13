@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin:0;padding:0}
+        #canvas{
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            border-radius: 20px;
+            box-shadow: 0px 5px 6px rgb(160,160,160);
+            background: -webkit-linear-gradient(30deg,rgba(250,250,250,1) 25%,rgba(210,210,210,1));
+        }
+    </style>
+</head>
+<body>
+    <div class="board"></div>
+    <canvas width="600px" height="450px" id="canvas"></canvas>
+    <script>
+        var can = document.querySelector('#canvas');
+        var cxt = can.getContext('2d');
+        draw();
+        setInterval(draw,1000);
+        function draw(){
+            //获取时间
+            var nowTime = new Date();
+            var hour = nowTime.getHours();
+            var min = nowTime.getMinutes();
+            var sec = nowTime.getSeconds();
+            min = min + sec/60;
+            hour = hour + min/60 + sec/60;
+            cxt.clearRect(0,0,600,450);
+            //绘制仪表盘
+            cxt.save();
+            cxt.translate(300,225);
+            cxt.beginPath();
+            cxt.arc(0,0,200,0,Math.PI*2,false);
+            cxt.strokeStyle = '#EEE8AA';
+            cxt.lineWidth = '10';
+            cxt.stroke();
+            cxt.beginPath();
+            cxt.arc(0,0,5,0,Math.PI*2,false);
+            cxt.fillStyle = '#B0C4DE';
+            cxt.fill();
+            cxt.restore();
+            makeHand(12,7,20,'#DAA520');
+            cxt.globalCompositeOperation = 'destination-over';
+            makeHand(60,5,10,'#778899');
+            //绘制移动刻度
+            movingHand(hour,12,7,110,'#EEE8AA');
+            movingHand(min,60,5,130,'#DAA520');
+            movingHand(sec,60,3,150,'yellow');
+            movingHand(sec,60,3,-30,'yellow');
+        }
+
+        //仪表盘刻度
+        function makeHand(count,width,height,color){
+            for(var i=0;i<count;i++){
+                cxt.save();
+                cxt.translate(300,225);
+                cxt.rotate(Math.PI*2/count*i);
+                cxt.beginPath();
+                cxt.moveTo(0,height-180);
+                cxt.lineTo(0,-180);
+                cxt.closePath();
+                cxt.lineWidth = width;
+                cxt.strokeStyle = color;
+                cxt.stroke();
+                cxt.restore();
+            }
+        }
+        //移动刻度
+        function movingHand(time,count,width,height,color){
+            cxt.save();
+            cxt.translate(300,225);
+            cxt.rotate(time*Math.PI*2/count);
+            cxt.beginPath();
+            cxt.lineWidth = width;
+            cxt.strokeStyle = color;
+            cxt.moveTo(0,0);
+            cxt.lineTo(0,-height);
+            cxt.closePath();
+            cxt.stroke();
+            cxt.restore();
+        }
+    </script>
+</body>
+</html>

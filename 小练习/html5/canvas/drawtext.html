@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin:0;padding:0}
+        #canvas{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            border-radius: 10px;
+            background: -webkit-linear-gradient(60deg,rgb(250,250,250) 25%,rgb(210,210,210));
+            box-shadow: 0 5px 6px rgb(160,160,160);
+        }
+        .container{
+            display: flex;
+            width: 400px;
+            height: 200px;
+            margin: 200px auto;
+            border-radius: 6px;
+            background: #EEE8AA;
+        }
+        .choose-group{
+            flex: 1;
+            padding: 15px;
+            color: darkgoldenrod;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="600px" height="350px" id="canvas"></canvas>
+    <div class="container">
+        <div class="choose-group">
+            <label for="inp">请输入文字</label>
+            <input type="text" value="canvas绘制文字" id="inp">
+        </div>
+        <div class="choose-group">
+            <label for="sel">请选择文字背景</label>
+            <select  id="sel">
+            </select>
+        </div>
+    </div>
+    <script>
+        var can = document.querySelector('#canvas');
+        var sel = document.querySelector('#sel');
+        var inp = document.querySelector('#inp');
+        var cxt = can.getContext('2d');
+
+        var colorArr = [];
+        var frag = document.createDocumentFragment();
+        //生成随机颜色
+        for(var i=0;i<5;i++){
+            colorArr.push(randomColor());
+        }
+        //将颜色数组绑定到选择框
+        colorArr.forEach(function(item,index,arr){
+            var opt = document.createElement('option');
+            if(index == 0){
+                opt.setAttribute('selected','selected');
+            }
+            opt.value = item;
+            opt.innerHTML = index+1;
+            frag.appendChild(opt);
+        })
+        sel.appendChild(frag);
+//        sel.children[0].selected = true;
+        drawText();
+        inp.oninput = drawText;
+        sel.onchange = drawText;
+        //绘制文本函数
+        function drawText(){
+            cxt.clearRect(0,0,600,350);
+            var val = inp.value,
+                color = sel.value,
+                padding = 20;
+            var fontSize = (can.width - padding*2)/val.length;
+            cxt.font = fontSize+'px 微软雅黑';
+            cxt.textBaseline = 'top';
+            var fw = cxt.measureText(val).width;
+            var fx =  (can.width - fw)/2;
+            var fy = (can.height - fontSize)/2;
+            console.log(color);
+            cxt.fillStyle = color;
+            cxt.fillText(val,fx,fy);
+        }
+        //随机颜色函数
+        function randomColor(){
+            var arr = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'];
+            var res = [];
+            for(var i=0;i<6;i++){
+                res.push(arr[Math.floor(Math.random()*16)]);
+            }
+            var result = `#${res.join('')}`
+            return result;
+        }
+
+    </script>
+</body>
+</html>
